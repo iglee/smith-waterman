@@ -62,3 +62,18 @@ for i in range(1,len(A)+1):
 
 print("printing the score matrix: ")
 print(V)
+
+# location of the max score
+(max_i,max_j) = np.unravel_index(np.argmax(V), V.shape)
+print("location of the maximum score: ")
+print(max_i,", " , max_j)
+print("maximum score: ", np.max(V))
+
+def backtrace(V, ind):
+    ind = (max_i, max_j)
+    trace = [(max_i, max_j)]
+    temp = V[max_i][max_j]
+    #while temp > 0:
+        # something
+    
+    #return trace
