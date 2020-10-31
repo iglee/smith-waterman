@@ -69,11 +69,26 @@ print("location of the maximum score: ")
 print(max_i,", " , max_j)
 print("maximum score: ", np.max(V))
 
-def backtrace(V, ind):
-    ind = (max_i, max_j)
-    trace = [(max_i, max_j)]
-    temp = V[max_i][max_j]
-    #while temp > 0:
-        # something
+def backtrack(V, i, j):
+    subseq = []
+    substringA = []
+    substringB = []
     
-    #return trace
+    while V[i][j] != 0:
+        subseq.append((i-1,j-1,V[i][j]))
+        if V[i-1][j-1] >= V[i-1][j] and V[i-1][j-1] >= V[i][j-1]:
+            substringA.append(A[i-1])
+            substringB.append(B[j-1])
+            i -= 1
+            j -=1
+        elif V[i-1][j] > V[i-1][j-1] and V[i-1][j] > V[i][j-1]:
+            substringA.append(A[i-1])
+            substringB.append("-")
+            i -= 1
+        elif V[i][j-1] > V[i-1][j-1] and V[i][j-1] >= V[i-1][j]:
+            substringA.append("-")
+            substringB.append(B[j-1])
+            j -= 1
+    return subseq, ''.join(substringA[::-1]), ''.join(substringB[::-1])
+
+subseq, substringA, substringB = backtrack(V,max_i,max_j)
