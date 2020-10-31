@@ -2,6 +2,8 @@
 import pandas as pd
 import numpy as np
 import argparse
+from itertools import permutations
+from random import sample
 
 # arguments for the script
 parser = argparse.ArgumentParser(description = "Implementation of Smith-Waterman Local Alignment.")
@@ -69,6 +71,7 @@ print("location of the maximum score: ")
 print(max_i,", " , max_j)
 print("maximum score: ", np.max(V))
 
+# backtrace and decode sequence
 def backtrack(V, i, j):
     subseq = []
     substringA = []
@@ -92,3 +95,17 @@ def backtrack(V, i, j):
     return subseq, ''.join(substringA[::-1]), ''.join(substringB[::-1])
 
 subseq, substringA, substringB = backtrack(V,max_i,max_j)
+
+# generate permutations of input string B
+permBs = sample(list(permutations(B)), 999)
+
+def score_perms(A, B_perm):
+    B_perm = list(B_perm)
+    
+    V = np.zeros((len(A)+1,len(B_perm)+1))
+    
+    for i in range(1,len(A)+1):
+        for j in range(1,len(B_perm)+1):
+            V[i][j] = score(V, A, B_perm, i, j)
+    return np.max(V)
+
