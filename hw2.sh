@@ -20,5 +20,5 @@ done
 
 # III.c
 echo "\n\n\nIII.c" >> output/output.txt
-python src/smith_waterman.py --file-input -af amino-acid-sequences/P15172.fasta -bf amino-acid-sequences/Q10574.fasta -p
-python src/smith_waterman.py --file-input -af amino-acid-sequences/P15172.fasta -bf amino-acid-sequences/O95363.fasta -p
+python src/smith_waterman.py --file-input -af amino-acid-sequences/P15172.fasta -bf amino-acid-sequences/Q10574.fasta -p -o output/output.txt
+python src/smith_waterman.py --file-input -af amino-acid-sequences/P15172.fasta -bf amino-acid-sequences/O95363.fasta -p -o output/output.txt
