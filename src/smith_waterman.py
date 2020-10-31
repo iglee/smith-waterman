@@ -4,7 +4,10 @@ import numpy as np
 import argparse
 from itertools import permutations
 from random import sample, randint
+import sys
+import time
 
+startTime = time.time()
 # arguments for the script
 parser = argparse.ArgumentParser(description = "Implementation of Smith-Waterman Local Alignment.")
 parser.add_argument("--str-input", action="store_true", help="indicates string inputs would be given. i.e. AKA")
@@ -138,8 +141,18 @@ if args.p:
 
     all_scores = []
 
+    print("Calculating scores for all permutations...")
+    m = 0
+    lst = time.time()
     for x in permBs:
         all_scores.append(score_perms(A,x))
+        m += 1
+        if m % 20 == 0:
+            #sys.stdout.write(" . " + str(m))
+
+            loopTime = (time.time() - lst)
+            print('Calculation time for',m,' score matrices seconds: ' + str(loopTime))
+    print("Done!")
 
     score_opts = set(all_scores)
 
@@ -150,3 +163,6 @@ if args.p:
 
     p = (k+1)/(N+1)
     print("empirical p-value: ", p)
+
+executionTime = (time.time() - startTime)
+print('Total execution seconds: ' + str(executionTime))
