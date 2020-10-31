@@ -69,7 +69,9 @@ print(V)
 (max_i,max_j) = np.unravel_index(np.argmax(V), V.shape)
 print("location of the maximum score: ")
 print(max_i,", " , max_j)
-print("maximum score: ", np.max(V))
+
+alignment_score = np.max(V)
+print("maximum score: ", alignment_score)
 
 # backtrace and decode sequence
 def backtrack(V, i, j):
@@ -97,7 +99,8 @@ def backtrack(V, i, j):
 subseq, substringA, substringB = backtrack(V,max_i,max_j)
 
 # generate permutations of input string B
-permBs = sample(list(permutations(B)), 999)
+N = 999
+permBs = sample(list(permutations(B)), N)
 
 def score_perms(A, B_perm):
     B_perm = list(B_perm)
@@ -109,3 +112,21 @@ def score_perms(A, B_perm):
             V[i][j] = score(V, A, B_perm, i, j)
     return np.max(V)
 
+all_scores = []
+
+for x in permBs:
+    all_scores.append(score_perms(A,x))
+
+score_opts = set(all_scores)
+
+k = 0
+for x in score_opts:
+    
+    #print(x)
+    #print(all_scores.count(x))
+    if x >= alignment_score:
+        k+=all_scores.count(x)
+    #print("total: ", total)
+
+p = (k+1)/(N+1)
+print("empirical p-value: ", p)
