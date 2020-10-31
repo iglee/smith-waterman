@@ -5,12 +5,15 @@ import argparse
 
 # arguments for the script
 parser = argparse.ArgumentParser(description = "Implementation of Smith-Waterman Local Alignment.")
+parser.add_argument("--str-input", action="store_true", help="indicates string inputs would be given. separated by commas. i.e. A,K,A")
+parser.add_argument("--file-input", action="store_true", help="indicates fasta file inputs would be given.")
 parser.add_argument("-A", metavar="A", action='store', type=str, help="one of the input sequences")
 parser.add_argument("-B", metavar="B", action='store', type=str, help="the other one of the input sequences")
 args = parser.parse_args()
 
-A = args.A
-B = args.B
+if args.str_input:
+    A = args.A.split(",")
+    B = args.B.split(",")
 
 # BLOSUM scoring matrix as Global variable- read in raw file and convert to dataframe
 f = open("BLOSUM62.txt", "r")
