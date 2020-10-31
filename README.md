@@ -6,11 +6,12 @@ course assignment page: https://courses.cs.washington.edu/courses/csep527/20au/h
 
 For string inputs, an example command usage is shown below
 ```
-python src/smith_waterman.py --str-input -A "AKA" -B "ak"
+python src/smith_waterman.py --str-input -A "AKA" -B "ak" -o output/output.txt
 ```
+the input is not case sensitive
 
 For file inputs, an example command usage is shown below
 ```
-python src/smith_waterman.py --file-input -af amino-acid-sequences/P15172.fasta -bf amino-acid-sequences/Q10574.fasta -p
+python src/smith_waterman.py --file-input -af amino-acid-sequences/P15172.fasta -bf amino-acid-sequences/Q10574.fasta -p -o output/output.txt
 ```
 **Caution: `-p` flag calculates p-value from Fisher Yates shuffles, so for fasta file inputs or long string sequences, it may take up to 20 minutes**

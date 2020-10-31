@@ -17,7 +17,10 @@ parser.add_argument("-B", metavar="B", action='store', type=str, help="the other
 parser.add_argument("-af", metavar="af", action='store', type=str, help="one of the input sequences *in a fasta file*")
 parser.add_argument("-bf", metavar="bf", action='store', type=str, help="one of the other input sequences *in a fasta file*")
 parser.add_argument("-p", action="store_true", help = "calculate the p-value. with B string permutations")
+parser.add_argument("-o", action="store", type=str, help="output file directory")
 args = parser.parse_args()
+
+f_out = open(args.o, 'w')
 
 if args.str_input:
     A = list(args.A.upper())
@@ -28,7 +31,7 @@ def read_data(filename):
     f = open(filename, "r")
     seq = f.readlines()
     seq_out = []
-
+    f.close()
     for l in seq[1:]:
         seq_out += list(l.strip())
     return seq_out
@@ -72,8 +75,12 @@ for i in range(1,len(A)+1):
         #print(i,j)
         V[i][j] = score(V, A, B, i, j)
 
-print("printing the score matrix: ")
-print(V)
+
+if len(A) <= 15 and len(B) <= 15:
+    print("printing the score matrix: ")
+    print(V)
+    print("Score Matrix:\n", file=f_out)
+    print(V, file=f_out)
 
 # location of the max score
 (max_i,max_j) = np.unravel_index(np.argmax(V), V.shape)
@@ -82,6 +89,7 @@ print(max_i,", " , max_j)
 
 alignment_score = np.max(V)
 print("maximum score: ", alignment_score)
+print("\nmaximum score: ", alignment_score, file=f_out)
 
 # backtrace and decode sequence
 def backtrack(V, i, j):
@@ -162,7 +170,10 @@ if args.p:
             k+=all_scores.count(x)
 
     p = (k+1)/(N+1)
+    print("\nempirical p-value: ", p, file=f_out)
     print("empirical p-value: ", p)
 
 executionTime = (time.time() - startTime)
 print('Total execution seconds: ' + str(executionTime))
+
+f_out.close()
