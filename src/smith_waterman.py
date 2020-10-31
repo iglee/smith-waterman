@@ -3,19 +3,36 @@ import pandas as pd
 import numpy as np
 import argparse
 from itertools import permutations
-from random import sample
+from random import sample, randint
 
 # arguments for the script
 parser = argparse.ArgumentParser(description = "Implementation of Smith-Waterman Local Alignment.")
-parser.add_argument("--str-input", action="store_true", help="indicates string inputs would be given. separated by commas. i.e. A,K,A")
+parser.add_argument("--str-input", action="store_true", help="indicates string inputs would be given. i.e. AKA")
 parser.add_argument("--file-input", action="store_true", help="indicates fasta file inputs would be given.")
 parser.add_argument("-A", metavar="A", action='store', type=str, help="one of the input sequences")
-parser.add_argument("-B", metavar="B", action='store', type=str, help="the other one of the input sequences")
+parser.add_argument("-B", metavar="B", action='store', type=str, help="the other one of the input sequences. this is the input that would be used for permutations.")
+parser.add_argument("-af", metavar="af", action='store', type=str, help="one of the input sequences *in a fasta file*")
+parser.add_argument("-bf", metavar="bf", action='store', type=str, help="one of the other input sequences *in a fasta file*")
+parser.add_argument("-p", action="store_true", help = "calculate the p-value. with B string permutations")
 args = parser.parse_args()
 
 if args.str_input:
-    A = args.A.split(",")
-    B = args.B.split(",")
+    A = list(args.A.upper())
+    B = list(args.B.upper())
+
+# read fasta files
+def read_data(filename):
+    f = open(filename, "r")
+    seq = f.readlines()
+    seq_out = []
+
+    for l in seq[1:]:
+        seq_out += list(l.strip())
+    return seq_out
+
+if args.file_input:
+    A = read_data(args.af)
+    B = read_data(args.bf)
 
 # BLOSUM scoring matrix as Global variable- read in raw file and convert to dataframe
 f = open("BLOSUM62.txt", "r")
@@ -35,16 +52,6 @@ BLOSUM = pd.DataFrame(blosum_processed, columns = temp[0], index = temp[0]).appl
 
 # amino acid codes as global variable
 amino_acid_code = temp[0][:20]
-
-# read fasta files
-def read_data(filename):
-    f = open(filename, "r")
-    seq = f.readlines()
-    seq_out = []
-
-    for l in seq[1:]:
-        seq_out += list(l.strip())
-    return seq_out
 
 # initialize the score matrix
 V = np.zeros((len(A)+1,len(B)+1))
@@ -98,35 +105,48 @@ def backtrack(V, i, j):
 
 subseq, substringA, substringB = backtrack(V,max_i,max_j)
 
-# generate permutations of input string B
-N = 999
-permBs = sample(list(permutations(B)), N)
+if args.p:
+    # generate permutations of input string B
+    N = 999
+    # permBs = sample(list(permutations(B)), N)  # use this as a check for fisher yates shuffle -- ONLY FOR SMALL INPUTS < 15 tokens
 
-def score_perms(A, B_perm):
-    B_perm = list(B_perm)
-    
-    V = np.zeros((len(A)+1,len(B_perm)+1))
-    
-    for i in range(1,len(A)+1):
-        for j in range(1,len(B_perm)+1):
-            V[i][j] = score(V, A, B_perm, i, j)
-    return np.max(V)
 
-all_scores = []
+    # use Fisher Yates shuffle to generate random permutations
+    def fs_shuffle(B):
+        seq = B.copy()
+        n = len(seq)
+        for i in range(n-1, 0, -1):
+            j = randint(0,i)
+            seq[i], seq[j] = seq[j], seq[i]
+        return seq
 
-for x in permBs:
-    all_scores.append(score_perms(A,x))
+    permBs = []
 
-score_opts = set(all_scores)
+    for x in range(N):
+        permBs.append(fs_shuffle(B))
 
-k = 0
-for x in score_opts:
-    
-    #print(x)
-    #print(all_scores.count(x))
-    if x >= alignment_score:
-        k+=all_scores.count(x)
-    #print("total: ", total)
 
-p = (k+1)/(N+1)
-print("empirical p-value: ", p)
+    def score_perms(A, B_perm):
+        B_perm = list(B_perm)
+        
+        V = np.zeros((len(A)+1,len(B_perm)+1))
+        
+        for i in range(1,len(A)+1):
+            for j in range(1,len(B_perm)+1):
+                V[i][j] = score(V, A, B_perm, i, j)
+        return np.max(V)
+
+    all_scores = []
+
+    for x in permBs:
+        all_scores.append(score_perms(A,x))
+
+    score_opts = set(all_scores)
+
+    k = 0
+    for x in score_opts:
+        if x >= alignment_score:
+            k+=all_scores.count(x)
+
+    p = (k+1)/(N+1)
+    print("empirical p-value: ", p)
