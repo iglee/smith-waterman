@@ -20,11 +20,12 @@ parser.add_argument("-p", action="store_true", help = "calculate the p-value. wi
 parser.add_argument("-o", action="store", type=str, help="output file directory")
 args = parser.parse_args()
 
-f_out = open(args.o, 'w')
+f_out = open(args.o, 'a+')
 
 if args.str_input:
     A = list(args.A.upper())
     B = list(args.B.upper())
+    print("\nComparison of two string inputs: ", A, " and ", B, file=f_out)
 
 # read fasta files
 def read_data(filename):
@@ -39,6 +40,7 @@ def read_data(filename):
 if args.file_input:
     A = read_data(args.af)
     B = read_data(args.bf)
+    print("\n======\nComparison of two file inputs: ", args.af, " and ", args.bf, file=f_out)
 
 # BLOSUM scoring matrix as Global variable- read in raw file and convert to dataframe
 f = open("BLOSUM62.txt", "r")

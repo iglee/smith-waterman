@@ -1,6 +1,6 @@
 # shell script for the runs
-rm -rf output/output.txt && touch output/output.txt
 
+rm -rf output/output.txt && touch output/output.txt
 
 # III.a
 echo "III.a" >> output/output.txt
@@ -18,4 +18,7 @@ for i in $files; do
   done
 done
 
-#python smith_waterman.py --file-input -af amino-acid-sequences/P15172.fasta -bf amino-acid-sequences/Q10574.fasta -p
+# III.c
+echo "\n\n\nIII.c" >> output/output.txt
+python src/smith_waterman.py --file-input -af amino-acid-sequences/P15172.fasta -bf amino-acid-sequences/Q10574.fasta -p
+python src/smith_waterman.py --file-input -af amino-acid-sequences/P15172.fasta -bf amino-acid-sequences/O95363.fasta -p
