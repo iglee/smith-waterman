@@ -118,6 +118,9 @@ def backtrack(V, i, j):
 
 subseq, substringA, substringB = backtrack(V,max_i,max_j)
 
+print("substring of first input: ", substringA, file=f_out)
+print("substring of second input: ", substringB, file=f_out)
+
 if args.p:
     # generate permutations of input string B
     N = 999
